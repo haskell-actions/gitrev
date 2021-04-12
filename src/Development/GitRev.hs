@@ -40,6 +40,7 @@ module Development.GitRev
   , gitDirty
   , gitDirtyTracked
   , gitHash
+  , gitCwd
   ) where
 
 import Control.Exception
@@ -54,6 +55,9 @@ import System.Process
 
 import Prelude ()
 import Prelude.Compat
+
+runCwd ::  Q String
+runCwd = runIO getCurrentDirectory
 
 -- | Run git with the given arguments and no stdin, returning the
 -- stdout output. If git isn't available or something goes wrong,
@@ -131,6 +135,11 @@ getGitRoot = do
 data IndexUsed = IdxUsed -- ^ The git index is used
                | IdxNotUsed -- ^ The git index is /not/ used
     deriving (Eq)
+
+-- | Return the hash of the current git commit, or @UNKNOWN@ if not in
+-- a git repository
+gitCwd :: ExpQ
+gitCwd = stringE =<< runCwd
 
 -- | Return the hash of the current git commit, or @UNKNOWN@ if not in
 -- a git repository
